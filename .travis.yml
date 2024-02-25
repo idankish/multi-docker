@@ -10,19 +10,16 @@ script:
   - docker run -e CI=true idankish/react-test npm test
 
 after_success:
-  - docker build idankish/multi-client ./client
-  - docker build idankish/multi-nginx ./nginx
-  - docker build idankish/multi-server ./server
-  - docker build idankish/multi-worker ./worker
-
-deploy:
-  provider: elasticbeanstalk
-  region: "eu-west-1"
-  app: "Frontend-react-app"
-  env: "Frontend-react-app-env"
-  bucket_name: "elasticbeanstalk-eu-west-1-819463086664"
-  bucket_path: "frontend"
-  on:
-    branch: main
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: "$AWS_SECRET_KEY"
+  - docker build -t idankish/multi-client ./client
+  - docker build -t idankish/multi-nginx ./nginx
+  - docker build -t idankish/multi-server ./server
+  - docker build -t idankish/multi-worker ./worker
+  - docker login -u idankish78 -p Kushksuhon41!
+  - docker tag idankish/multi-client idankish78/multi-client
+  - docker tag idankish/multi-nginx idankish78/multi-nginx
+  - docker tag idankish/multi-server idankish78/multi-server
+  - docker tag idankish/multi-worker idankish78/multi-worker
+  - docker push idankish78/multi-client
+  - docker push idankish78/multi-nginx 
+  - docker push idankish78/multi-server 
+  - docker push idankish78/multi-worker
