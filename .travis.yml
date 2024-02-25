@@ -1,0 +1,28 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t idankish/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true idankish/react-test npm test
+
+after_success:
+  - docker build idankish/multi-client ./client
+  - docker build idankish/multi-nginx ./nginx
+  - docker build idankish/multi-server ./server
+  - docker build idankish/multi-worker ./worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: "eu-west-1"
+  app: "Frontend-react-app"
+  env: "Frontend-react-app-env"
+  bucket_name: "elasticbeanstalk-eu-west-1-819463086664"
+  bucket_path: "frontend"
+  on:
+    branch: main
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: "$AWS_SECRET_KEY"
